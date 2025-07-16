@@ -152,3 +152,16 @@ variable "langfuse_helm_chart_version" {
   type        = string
   default     = "1.3.1"
 }
+
+variable "add_ssl_certificate_annotation" {
+  description = <<EOT
+Whether to inject the `appgw.ingress.kubernetes.io/appgw-ssl-certificate` annotation in the Helm chart.
+
+Set to false if you're using cert-manager and want to use a K8s TLS secret (referenced via `tls.secretName`)
+instead of a Key Vault certificate uploaded to Application Gateway.
+
+If false, the module will omit the annotation, allowing AGIC to manage TLS cert binding from the K8s secret.
+EOT
+  type        = bool
+  default     = true
+}

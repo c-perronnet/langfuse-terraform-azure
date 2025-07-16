@@ -5,8 +5,11 @@ langfuse:
     enabled: true
     className: azure-application-gateway
     annotations:
+      kubernetes.io/ingress.class: azure/application-gateway
       appgw.ingress.kubernetes.io/ssl-redirect: "true"
+      %{ if var.add_ssl_certificate_annotation }
       appgw.ingress.kubernetes.io/appgw-ssl-certificate: ${var.name}
+      %{ endif }
     hosts:
     - host: ${var.domain}
       paths:
