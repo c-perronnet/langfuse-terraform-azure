@@ -182,6 +182,7 @@ resource "azurerm_application_gateway" "this" {
     protocol                       = "Http"
   }
 
+  %{ if var.add_ssl_certificate_annotation }
   http_listener {
     name                           = "https-listener"
     frontend_ip_configuration_name = "frontend-ip-configuration"
@@ -189,6 +190,7 @@ resource "azurerm_application_gateway" "this" {
     protocol                       = "Https"
     ssl_certificate_name           = var.name
   }
+  %{ endif }
 
   request_routing_rule {
     name                       = "http-routing-rule"
