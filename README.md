@@ -198,6 +198,7 @@ The module creates a complete Langfuse stack with the following Azure components
 
 ## Inputs
 
+<<<<<<< HEAD
 | Name                              | Description                                   | Type   | Default              | Required |
 |-----------------------------------|-----------------------------------------------|--------|----------------------|:--------:|
 | name                              | Name prefix for resources                     | string | "langfuse"           |    no    |
@@ -233,6 +234,9 @@ The module creates a complete Langfuse stack with the following Azure components
                                       annotation in the ingress Helm values. Set to
                                       false if you're using cert-manager and want to
                                       avoid conflicts with AGIC.                    | bool   | true                 |    no    |
+| tls_secret_name                   | TLS secret name in ingress for cert-manager.  | string | "langfuse-tls-secret" |    no    |
+
+
 ## Outputs
 
 | Name                       | Description                                         |

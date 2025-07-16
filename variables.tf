@@ -176,3 +176,9 @@ variable "subscription_id" {
   type        = string
   default     = "80ad38c4-e7d3-4c24-b58c-41980d362ec8"
 }
+
+variable "tls_secret_name" {
+  description = "The TLS secret name for ingress TLS binding"
+  type        = string
+  default     = "langfuse-tls-secret"
+}
