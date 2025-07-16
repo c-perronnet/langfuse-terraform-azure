@@ -225,8 +225,17 @@ The module creates a complete Langfuse stack with the following Azure components
 | redis_capacity                    | Capacity of Redis                             | number | 1                    |    no    |
 | app_gateway_capacity              | Capacity for Application Gateway              | number | 1                    |    no    |
 | use_ddos_protection               | Whether to use DDoS protection                | bool   | true                 |    no    |
+<<<<<<< HEAD
 | langfuse_helm_chart_version       | Version of the Langfuse Helm chart to deploy  | string | "1.5.0"              |    no    |
 | additional_env                    | Additional environment variables for Langfuse | list   | []                   |    no    |
+=======
+| langfuse_helm_chart_version       | Version of the Langfuse Helm chart to deploy  | string | "1.3.1"              |    no    |
+| add_ssl_certificate_annotation    | Whether to include the
+                                      appgw.ingress.kubernetes.io/appgw-ssl-certificate
+                                      annotation in the ingress Helm values. Set to
+                                      false if you're using cert-manager and want to
+                                      avoid conflicts with AGIC.                    | bool   | true                 |    no    |
+>>>>>>> b9291cd (fix: Make app Gateway SSL annotation optional for cert-manager compat)
 
 ## Outputs
 
