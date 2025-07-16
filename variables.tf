@@ -165,3 +165,9 @@ EOT
   type        = bool
   default     = true
 }
+
+variable "tls_secret_name" {
+  description = "The TLS secret name for ingress TLS binding"
+  type        = string
+  default     = "langfuse-tls-secret"
+}

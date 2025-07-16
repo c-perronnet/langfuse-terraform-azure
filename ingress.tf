@@ -15,6 +15,9 @@ langfuse:
       paths:
       - path: /
         pathType: Prefix
+    tls:
+      enabled: true
+      secretName: ${var.tls_secret_name}
 EOT
 }
 
