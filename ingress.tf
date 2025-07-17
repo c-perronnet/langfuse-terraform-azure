@@ -158,9 +158,12 @@ resource "azurerm_application_gateway" "this" {
     public_ip_address_id = azurerm_public_ip.appgw.id
   }
 
-  ssl_certificate {
-    name                = var.name
-    key_vault_secret_id = azurerm_key_vault_certificate.this.versionless_secret_id
+  dynamic "ssl_certificate" {
+    for_each = var.add_ssl_certificate_annotation ? [1] : []
+    content {
+      name                = var.name
+      key_vault_secret_id = azurerm_key_vault_certificate.this.versionless_secret_id
+    }
   }
 
   backend_address_pool {
@@ -182,15 +185,17 @@ resource "azurerm_application_gateway" "this" {
     protocol                       = "Http"
   }
 
-  %{ if var.add_ssl_certificate_annotation }
-  http_listener {
-    name                           = "https-listener"
-    frontend_ip_configuration_name = "frontend-ip-configuration"
-    frontend_port_name             = "https"
-    protocol                       = "Https"
-    ssl_certificate_name           = var.name
+  dynamic "http_listener" {
+    for_each = var.add_ssl_certificate_annotation ? [1] : []
+    content {
+      name                           = "https-listener"
+      frontend_ip_configuration_name = "frontend-ip-configuration"
+      frontend_port_name             = "https"
+      protocol                       = "Https"
+      ssl_certificate_name           = var.name
+    }
   }
-  %{ endif }
+
 
   request_routing_rule {
     name                       = "http-routing-rule"
