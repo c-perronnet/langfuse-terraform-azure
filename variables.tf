@@ -152,3 +152,21 @@ variable "langfuse_helm_chart_version" {
   type        = string
   default     = "1.3.1"
 }
+
+variable "google_client_id" {
+  description = "Google OAuth Client ID"
+  type        = string
+  sensitive   = true
+}
+
+variable "google_client_secret" {
+  description = "Google OAuth Client Secret"
+  type        = string
+  sensitive   = true
+}
+
+variable "auth_domains_with_sso_enforcement" {
+  description = "Domains that must use SSO (disable email/password for these domains)"
+  type        = string
+  default     = "multiverse.io"
+}

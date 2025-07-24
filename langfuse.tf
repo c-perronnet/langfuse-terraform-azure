@@ -62,6 +62,31 @@ langfuse:
   - name: LANGFUSE_USE_AZURE_BLOB
     value: "true" 
 EOT
+
+  sso_values = <<EOT
+langfuse:
+  additionalEnv:
+  - name: AUTH_GOOGLE_CLIENT_ID
+    valueFrom:
+      secretKeyRef:
+        name: ${kubernetes_secret.langfuse.metadata[0].name}
+        key: google-client-id
+  - name: AUTH_GOOGLE_CLIENT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: ${kubernetes_secret.langfuse.metadata[0].name}
+        key: google-client-secret
+  - name: AUTH_GOOGLE_ALLOWED_DOMAINS
+    value: "${var.auth_domains_with_sso_enforcement}"
+  - name: AUTH_DOMAINS_WITH_SSO_ENFORCEMENT
+    value: "${var.auth_domains_with_sso_enforcement}"
+  - name: AUTH_GOOGLE_ALLOW_ACCOUNT_LINKING
+    value: "true"
+  - name: AUTH_DISABLE_USERNAME_PASSWORD
+    value: "true"
+  - name: AUTH_DISABLE_SIGNUP
+    value: "true"
+EOT
 }
 
 resource "kubernetes_namespace" "langfuse" {
@@ -93,13 +118,15 @@ resource "kubernetes_secret" "langfuse" {
   }
 
   data = {
-    "redis-password"      = azurerm_redis_cache.this.primary_access_key
-    "postgres-password"   = azurerm_postgresql_flexible_server.this.administrator_password
-    "storage-access-key"  = azurerm_storage_account.this.primary_access_key
-    "salt"                = random_bytes.salt.base64
-    "nextauth-secret"     = random_bytes.nextauth_secret.base64
-    "clickhouse-password" = random_password.clickhouse_password.result
-    "encryption-key"      = var.use_encryption_key ? random_bytes.encryption_key[0].hex : ""
+    "redis-password"                     = azurerm_redis_cache.this.primary_access_key
+    "postgres-password"                  = azurerm_postgresql_flexible_server.this.administrator_password
+    "storage-access-key"                 = azurerm_storage_account.this.primary_access_key
+    "salt"                               = random_bytes.salt.base64
+    "nextauth-secret"                    = random_bytes.nextauth_secret.base64
+    "clickhouse-password"                = random_password.clickhouse_password.result
+    "encryption-key"                     = var.use_encryption_key ? random_bytes.encryption_key[0].hex : ""
+    "google-client-id"        = var.google_client_id
+    "google-client-secret"    = var.google_client_secret
   }
 }
 
@@ -114,6 +141,7 @@ resource "helm_release" "langfuse" {
   values = [
     local.langfuse_values,
     local.ingress_values,
-    local.encryption_values
+    local.encryption_values,
+    local.sso_values
   ]
 }
