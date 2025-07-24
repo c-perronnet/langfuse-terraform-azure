@@ -12,7 +12,7 @@ variable "domain" {
 variable "location" {
   description = "Azure region to deploy resources"
   type        = string
-  default     = "westeurope"
+  default     = "eastus"
 }
 
 variable "virtual_network_address_prefix" {

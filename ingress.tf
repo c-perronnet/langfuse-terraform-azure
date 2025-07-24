@@ -6,12 +6,15 @@ langfuse:
     className: azure-application-gateway
     annotations:
       appgw.ingress.kubernetes.io/ssl-redirect: "true"
-      appgw.ingress.kubernetes.io/appgw-ssl-certificate: ${var.name}
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
     hosts:
     - host: ${var.domain}
       paths:
       - path: /
         pathType: Prefix
+    tls:
+      enabled: true
+      secretName: langfuse-tls
 EOT
 }
 
@@ -152,11 +155,6 @@ resource "azurerm_application_gateway" "this" {
     public_ip_address_id = azurerm_public_ip.appgw.id
   }
 
-  ssl_certificate {
-    name                = var.name
-    key_vault_secret_id = azurerm_key_vault_certificate.this.versionless_secret_id
-  }
-
   backend_address_pool {
     name = "backend-address-pool"
   }
@@ -176,14 +174,6 @@ resource "azurerm_application_gateway" "this" {
     protocol                       = "Http"
   }
 
-  http_listener {
-    name                           = "https-listener"
-    frontend_ip_configuration_name = "frontend-ip-configuration"
-    frontend_port_name             = "https"
-    protocol                       = "Https"
-    ssl_certificate_name           = var.name
-  }
-
   request_routing_rule {
     name                       = "http-routing-rule"
     rule_type                  = "Basic"
@@ -191,15 +181,6 @@ resource "azurerm_application_gateway" "this" {
     backend_address_pool_name  = "backend-address-pool"
     backend_http_settings_name = "backend-http-settings"
     priority                   = 1
-  }
-
-  request_routing_rule {
-    name                       = "https-routing-rule"
-    rule_type                  = "Basic"
-    http_listener_name         = "https-listener"
-    backend_address_pool_name  = "backend-address-pool"
-    backend_http_settings_name = "backend-http-settings"
-    priority                   = 2
   }
 
   # The AppGW is later managed by the  Ingress Controller, but the Backend address
@@ -214,6 +195,8 @@ resource "azurerm_application_gateway" "this" {
       probe,
       request_routing_rule,
       frontend_port,
+      ssl_certificate,
+      redirect_configuration,
     ]
   }
 }
