@@ -44,13 +44,16 @@ s3:
     secretKeyRef:
       name: ${kubernetes_secret.langfuse.metadata[0].name}
       key: storage-access-key
-  forcePathStyle: false
+  forcePathStyle: true
   eventUpload:
     prefix: "events/"
   batchExport:
     prefix: "exports/"
   mediaUpload:
     prefix: "media/"
+  additionalEnv:
+  - name: AUTH_DISABLE_SIGNUP
+    value: "false"
 EOT
   encryption_values = var.use_encryption_key == false ? "" : <<EOT
 langfuse:
@@ -58,9 +61,6 @@ langfuse:
     secretKeyRef:
       name: ${kubernetes_secret.langfuse.metadata[0].name}
       key: encryption-key
-  additionalEnv:
-  - name: LANGFUSE_USE_AZURE_BLOB
-    value: "true" 
 EOT
 
   sso_values = <<EOT
@@ -84,7 +84,7 @@ langfuse:
     value: "true"
   - name: AUTH_DISABLE_USERNAME_PASSWORD
     value: "true"
-  - name: AUTH_DISABLE_SIGNUP
+  - name: LANGFUSE_USE_AZURE_BLOB
     value: "true"
 EOT
 }
