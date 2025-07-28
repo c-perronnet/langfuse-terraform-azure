@@ -1,5 +1,5 @@
 provider "azurerm" {
-  subscription_id = "80ad38c4-e7d3-4c24-b58c-41980d362ec8"
+  subscription_id = var.subscription_id
   features {}
   # Note: This uses Azure CLI authentication with explicit subscription ID
 }

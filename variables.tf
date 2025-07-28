@@ -170,3 +170,9 @@ variable "auth_domains_with_sso_enforcement" {
   type        = string
   default     = "multiverse.io"
 }
+
+variable "subscription_id" {
+  description = "Azure Subscription ID"
+  type        = string
+  default     = "80ad38c4-e7d3-4c24-b58c-41980d362ec8"
+}
