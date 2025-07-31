@@ -13,7 +13,7 @@ This module aims to provide a production-ready, secure, and scalable deployment 
 
 ```hcl
 module "langfuse" {
-  source = "github.com/langfuse/langfuse-terraform-azure?ref=0.2.0"
+  source = "github.com/langfuse/langfuse-terraform-azure?ref=0.3.0"
 
   domain              = "langfuse.example.com"
   location            = "westeurope"  # Optional: defaults to westeurope
@@ -57,7 +57,33 @@ module "langfuse" {
   use_ddos_protection = true
 
   # Optional: Configure Langfuse Helm chart version
-  langfuse_helm_chart_version = "1.3.1"
+  langfuse_helm_chart_version = "1.3.3"
+  
+  # Optional: Add additional environment variables
+  additional_env = [
+    {
+      name  = "CUSTOM_ENV_VAR"
+      value = "custom-value"
+    },
+    {
+      name = "DATABASE_PASSWORD"
+      valueFrom = {
+        secretKeyRef = {
+          name = "my-database-secret"
+          key  = "password"
+        }
+      }
+    },
+    {
+      name = "CONFIG_VALUE"
+      valueFrom = {
+        configMapKeyRef = {
+          name = "my-config-map"
+          key  = "config-key"
+        }
+      }
+    }
+  ]
 }
 
 provider "kubernetes" {
@@ -202,6 +228,7 @@ The module creates a complete Langfuse stack with the following Azure components
 | langfuse_helm_chart_version       | Version of the Langfuse Helm chart to deploy  | string | "1.3.1"               |    no    |
 | add_ssl_certificate_annotation    | Whether to use AGIC SSL cert annotation.      | bool   | true                  |    no    |
 | tls_secret_name                   | TLS secret name in ingress for cert-manager.  | string | "langfuse-tls-secret" |    no    |
+| additional_env                    | Additional environment variables for Langfuse | list   | []                   |    no    |
 
 
 ## Outputs
