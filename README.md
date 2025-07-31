@@ -57,7 +57,11 @@ module "langfuse" {
   use_ddos_protection = true
 
   # Optional: Configure Langfuse Helm chart version
+<<<<<<< HEAD
   langfuse_helm_chart_version = "1.5.0"
+=======
+  langfuse_helm_chart_version = "1.3.3"
+>>>>>>> 6c6be45 (feat: allow additionalEnv settings in module (#18))
   
   # Optional: Add additional environment variables
   additional_env = [
@@ -235,6 +239,7 @@ The module creates a complete Langfuse stack with the following Azure components
                                       false if you're using cert-manager and want to
                                       avoid conflicts with AGIC.                    | bool   | true                 |    no    |
 | tls_secret_name                   | TLS secret name in ingress for cert-manager.  | string | "langfuse-tls-secret" |    no    |
+| additional_env                    | Additional environment variables for Langfuse | list   | []                   |    no    |
 
 
 ## Outputs
