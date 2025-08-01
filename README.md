@@ -13,7 +13,7 @@ This module aims to provide a production-ready, secure, and scalable deployment 
 
 ```hcl
 module "langfuse" {
-  source = "github.com/langfuse/langfuse-terraform-azure?ref=0.3.0"
+  source = "github.com/langfuse/langfuse-terraform-azure?ref=0.3.1"
 
   domain              = "langfuse.example.com"
   location            = "westeurope"  # Optional: defaults to westeurope
@@ -57,7 +57,7 @@ module "langfuse" {
   use_ddos_protection = true
 
   # Optional: Configure Langfuse Helm chart version
-  langfuse_helm_chart_version = "1.3.3"
+  langfuse_helm_chart_version = "1.3.4"
   
   # Optional: Add additional environment variables
   additional_env = [
