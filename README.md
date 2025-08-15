@@ -59,6 +59,7 @@ module "langfuse" {
   # Optional: Configure Langfuse Helm chart version
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   langfuse_helm_chart_version = "1.5.0"
 =======
   langfuse_helm_chart_version = "1.3.3"
@@ -66,6 +67,9 @@ module "langfuse" {
 =======
   langfuse_helm_chart_version = "1.3.4"
 >>>>>>> 880afe6 (chore: bump langfuse helm to 1.3.4)
+=======
+  langfuse_helm_chart_version = "1.4.0"
+>>>>>>> 2b52449 (chore: bump to 0.4.0 and upgrade helm to 1.4.0)
   
   # Optional: Add additional environment variables
   additional_env = [
