@@ -190,6 +190,7 @@ resource "azurerm_application_gateway" "this" {
     http_listener_name         = "http-listener"
     backend_address_pool_name  = "backend-address-pool"
     backend_http_settings_name = "backend-http-settings"
+    redirect_configuration_name = "ssl-redirect-config"
     priority                   = 1
   }
 
@@ -201,7 +202,13 @@ resource "azurerm_application_gateway" "this" {
     backend_http_settings_name = "backend-http-settings"
     priority                   = 2
   }
-
+  redirect_configuration {
+    name                 = "ssl-redirect-config"
+    redirect_type        = "Permanent"
+    target_listener_name = "https-listener"
+    include_path         = true
+    include_query_string = true
+  }
   # The AppGW is later managed by the  Ingress Controller, but the Backend address
   # Pool is required to creat the resource. Therefore, "lifecycle:ignore_changes" is 
   # used to prevent TF from managing the gateway.
@@ -214,6 +221,7 @@ resource "azurerm_application_gateway" "this" {
       probe,
       request_routing_rule,
       frontend_port,
+      redirect_configuration,
     ]
   }
 }
