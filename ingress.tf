@@ -201,8 +201,8 @@ resource "azurerm_application_gateway" "this" {
     name                       = "http-routing-rule"
     rule_type                  = "Basic"
     http_listener_name         = "http-listener"
-    backend_address_pool_name  = "backend-address-pool"
-    backend_http_settings_name = "backend-http-settings"
+    #backend_address_pool_name  = "backend-address-pool"
+    #backend_http_settings_name = "backend-http-settings"
     redirect_configuration_name = "ssl-redirect-config"
     priority                   = 1
   }
