@@ -112,7 +112,6 @@ resource "helm_release" "langfuse" {
   values = [
     local.langfuse_values,
     local.ingress_values,
-    local.encryption_values,
-    local.sso_values
+    local.encryption_values
   ]
 }
