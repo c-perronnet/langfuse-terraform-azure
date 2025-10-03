@@ -51,9 +51,6 @@ s3:
     prefix: "exports/"
   mediaUpload:
     prefix: "media/"
-  additionalEnv:
-  - name: AUTH_DISABLE_SIGNUP
-    value: "false"
 EOT
   encryption_values = var.use_encryption_key == false ? "" : <<EOT
 langfuse:
@@ -61,77 +58,7 @@ langfuse:
     secretKeyRef:
       name: ${kubernetes_secret.langfuse.metadata[0].name}
       key: encryption-key
-EOT
-
-  sso_values = <<EOT
-langfuse:
   additionalEnv:
-  - name: AUTH_GOOGLE_CLIENT_ID
-    valueFrom:
-      secretKeyRef:
-        name: ${kubernetes_secret.langfuse.metadata[0].name}
-        key: google-client-id
-  - name: AUTH_GOOGLE_CLIENT_SECRET
-    valueFrom:
-      secretKeyRef:
-        name: ${kubernetes_secret.langfuse.metadata[0].name}
-        key: google-client-secret
-  - name: AUTH_GOOGLE_ALLOWED_DOMAINS
-    value: "${var.auth_domains_with_sso_enforcement}"
-  - name: AUTH_DOMAINS_WITH_SSO_ENFORCEMENT
-    value: "${var.auth_domains_with_sso_enforcement}"
-  - name: AUTH_GOOGLE_ALLOW_ACCOUNT_LINKING
-    value: "true"
-  - name: AUTH_DISABLE_USERNAME_PASSWORD
-    value: "true"
-  - name: LANGFUSE_USE_AZURE_BLOB
-    value: "true"
-EOT
-  additional_env_values = length(var.additional_env) == 0 ? "" : <<EOT
-langfuse:
-  additionalEnv:
-%{for env in var.additional_env}
-  - name: ${env.name}
-%{if env.value != null}
-    value: "${env.value}"
-%{endif}
-%{if env.valueFrom != null}
-    valueFrom:
-%{if env.valueFrom.secretKeyRef != null}
-      secretKeyRef:
-        name: ${env.valueFrom.secretKeyRef.name}
-        key: ${env.valueFrom.secretKeyRef.key}
-%{endif}
-%{if env.valueFrom.configMapKeyRef != null}
-      configMapKeyRef:
-        name: ${env.valueFrom.configMapKeyRef.name}
-        key: ${env.valueFrom.configMapKeyRef.key}
-%{endif}
-%{endif}
-%{endfor}
-EOT
-  additional_env_values = length(var.additional_env) == 0 ? "" : <<EOT
-langfuse:
-  additionalEnv:
-%{for env in var.additional_env}
-  - name: ${env.name}
-%{if env.value != null}
-    value: "${env.value}"
-%{endif}
-%{if env.valueFrom != null}
-    valueFrom:
-%{if env.valueFrom.secretKeyRef != null}
-      secretKeyRef:
-        name: ${env.valueFrom.secretKeyRef.name}
-        key: ${env.valueFrom.secretKeyRef.key}
-%{endif}
-%{if env.valueFrom.configMapKeyRef != null}
-      configMapKeyRef:
-        name: ${env.valueFrom.configMapKeyRef.name}
-        key: ${env.valueFrom.configMapKeyRef.key}
-%{endif}
-%{endif}
-%{endfor}
 EOT
 }
 
@@ -188,7 +115,6 @@ resource "helm_release" "langfuse" {
     local.langfuse_values,
     local.ingress_values,
     local.encryption_values,
-    local.sso_values,
-    local.additional_env_values
+    local.sso_values
   ]
 }
