@@ -27,7 +27,7 @@ metadata:
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: adam.stanley@multiverse.io
+    email: c.perronnet@unesco.org 
     privateKeySecretRef:
       name: letsencrypt-prod
     solvers:
