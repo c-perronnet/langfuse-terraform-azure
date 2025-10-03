@@ -1,8 +1,3 @@
-provider "azurerm" {
-  subscription_id = var.subscription_id
-  features {}
-  # Note: This uses Azure CLI authentication with explicit subscription ID
-}
 
 # Kubernetes and Helm providers depend on the AKS cluster being created first
 # These configurations reference the cluster outputs
