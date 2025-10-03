@@ -108,6 +108,8 @@ resource "helm_release" "langfuse" {
   chart            = "langfuse"
   namespace        = "langfuse"
   create_namespace = true
+  reuse_values     = true
+
 
   values = [
     local.langfuse_values,
