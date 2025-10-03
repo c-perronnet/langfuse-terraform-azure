@@ -109,6 +109,7 @@ resource "helm_release" "langfuse" {
   namespace        = "langfuse"
   create_namespace = true
   reuse_values     = true
+  replace          = true
 
 
   values = [
