@@ -5,13 +5,19 @@ langfuse:
     enabled: true
     className: azure-application-gateway
     annotations:
+      kubernetes.io/ingress.class: azure/application-gateway
       appgw.ingress.kubernetes.io/ssl-redirect: "true"
+      %{ if var.add_ssl_certificate_annotation }
       appgw.ingress.kubernetes.io/appgw-ssl-certificate: ${var.name}
+      %{ endif }
     hosts:
     - host: ${var.domain}
       paths:
       - path: /
         pathType: Prefix
+    tls:
+      enabled: true
+      secretName: ${var.tls_secret_name}
 EOT
 }
 
@@ -152,9 +158,12 @@ resource "azurerm_application_gateway" "this" {
     public_ip_address_id = azurerm_public_ip.appgw.id
   }
 
-  ssl_certificate {
-    name                = var.name
-    key_vault_secret_id = azurerm_key_vault_certificate.this.versionless_secret_id
+  dynamic "ssl_certificate" {
+    for_each = var.add_ssl_certificate_annotation ? [1] : []
+    content {
+      name                = var.name
+      key_vault_secret_id = azurerm_key_vault_certificate.this.versionless_secret_id
+    }
   }
 
   backend_address_pool {
@@ -176,13 +185,17 @@ resource "azurerm_application_gateway" "this" {
     protocol                       = "Http"
   }
 
-  http_listener {
-    name                           = "https-listener"
-    frontend_ip_configuration_name = "frontend-ip-configuration"
-    frontend_port_name             = "https"
-    protocol                       = "Https"
-    ssl_certificate_name           = var.name
+  dynamic "http_listener" {
+    for_each = var.add_ssl_certificate_annotation ? [1] : []
+    content {
+      name                           = "https-listener"
+      frontend_ip_configuration_name = "frontend-ip-configuration"
+      frontend_port_name             = "https"
+      protocol                       = "Https"
+      ssl_certificate_name           = var.name
+    }
   }
+
 
   request_routing_rule {
     name                       = "http-routing-rule"

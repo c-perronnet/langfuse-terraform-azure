@@ -178,3 +178,22 @@ variable "additional_env" {
     error_message = "Each environment variable must have either 'value' or 'valueFrom' specified, but not both."
   }
 }
+
+variable "add_ssl_certificate_annotation" {
+  description = <<EOT
+Whether to inject the `appgw.ingress.kubernetes.io/appgw-ssl-certificate` annotation in the Helm chart.
+
+Set to false if you're using cert-manager and want to use a K8s TLS secret (referenced via `tls.secretName`)
+instead of a Key Vault certificate uploaded to Application Gateway.
+
+If false, the module will omit the annotation, allowing AGIC to manage TLS cert binding from the K8s secret.
+EOT
+  type        = bool
+  default     = true
+}
+
+variable "tls_secret_name" {
+  description = "The TLS secret name for ingress TLS binding"
+  type        = string
+  default     = "langfuse-tls-secret"
+}
