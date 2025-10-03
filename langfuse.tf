@@ -116,13 +116,13 @@ resource "kubernetes_secret" "langfuse" {
   }
 
   data = {
-    "redis-password"                     = azurerm_redis_cache.this.primary_access_key
-    "postgres-password"                  = azurerm_postgresql_flexible_server.this.administrator_password
-    "storage-access-key"                 = azurerm_storage_account.this.primary_access_key
-    "salt"                               = random_bytes.salt.base64
-    "nextauth-secret"                    = random_bytes.nextauth_secret.base64
-    "clickhouse-password"                = random_password.clickhouse_password.result
-    "encryption-key"                     = var.use_encryption_key ? random_bytes.encryption_key[0].hex : ""
+    "redis-password"      = azurerm_redis_cache.this.primary_access_key
+    "postgres-password"   = azurerm_postgresql_flexible_server.this.administrator_password
+    "storage-access-key"  = azurerm_storage_account.this.primary_access_key
+    "salt"                = random_bytes.salt.base64
+    "nextauth-secret"     = random_bytes.nextauth_secret.base64
+    "clickhouse-password" = random_password.clickhouse_password.result
+    "encryption-key"      = var.use_encryption_key ? random_bytes.encryption_key[0].hex : ""
   }
 }
 
@@ -133,12 +133,11 @@ resource "helm_release" "langfuse" {
   chart            = "langfuse"
   namespace        = "langfuse"
   create_namespace = true
-  replace          = true
-
 
   values = [
     local.langfuse_values,
     local.ingress_values,
-    local.encryption_values
+    local.encryption_values,
+    local.additional_env_values
   ]
 }
