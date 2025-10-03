@@ -98,8 +98,6 @@ resource "kubernetes_secret" "langfuse" {
     "nextauth-secret"                    = random_bytes.nextauth_secret.base64
     "clickhouse-password"                = random_password.clickhouse_password.result
     "encryption-key"                     = var.use_encryption_key ? random_bytes.encryption_key[0].hex : ""
-    "google-client-id"        = var.google_client_id
-    "google-client-secret"    = var.google_client_secret
   }
 }
 
