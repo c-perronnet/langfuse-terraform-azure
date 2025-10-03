@@ -1,15 +1,12 @@
-locals {
+ilocals {
   ingress_values = <<EOT
 langfuse:
   ingress:
     enabled: true
     className: azure-application-gateway
     annotations:
-      kubernetes.io/ingress.class: azure/application-gateway
       appgw.ingress.kubernetes.io/ssl-redirect: "true"
-      %{ if var.add_ssl_certificate_annotation }
-      appgw.ingress.kubernetes.io/appgw-ssl-certificate: ${var.name}
-      %{ endif }
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
     hosts:
     - host: ${var.domain}
       paths:
@@ -17,7 +14,7 @@ langfuse:
         pathType: Prefix
     tls:
       enabled: true
-      secretName: ${var.tls_secret_name}
+      secretName: langfuse-tls
 EOT
 }
 
@@ -158,14 +155,6 @@ resource "azurerm_application_gateway" "this" {
     public_ip_address_id = azurerm_public_ip.appgw.id
   }
 
-  dynamic "ssl_certificate" {
-    for_each = var.add_ssl_certificate_annotation ? [1] : []
-    content {
-      name                = var.name
-      key_vault_secret_id = azurerm_key_vault_certificate.this.versionless_secret_id
-    }
-  }
-
   backend_address_pool {
     name = "backend-address-pool"
   }
@@ -185,43 +174,15 @@ resource "azurerm_application_gateway" "this" {
     protocol                       = "Http"
   }
 
-  dynamic "http_listener" {
-    for_each = var.add_ssl_certificate_annotation ? [1] : []
-    content {
-      name                           = "https-listener"
-      frontend_ip_configuration_name = "frontend-ip-configuration"
-      frontend_port_name             = "https"
-      protocol                       = "Https"
-      ssl_certificate_name           = var.name
-    }
-  }
-
-
   request_routing_rule {
     name                       = "http-routing-rule"
     rule_type                  = "Basic"
     http_listener_name         = "http-listener"
-    #backend_address_pool_name  = "backend-address-pool"
-    #backend_http_settings_name = "backend-http-settings"
-    redirect_configuration_name = "ssl-redirect-config"
+    backend_address_pool_name  = "backend-address-pool"
+    backend_http_settings_name = "backend-http-settings"
     priority                   = 1
   }
 
-  request_routing_rule {
-    name                       = "https-routing-rule"
-    rule_type                  = "Basic"
-    http_listener_name         = "https-listener"
-    backend_address_pool_name  = "backend-address-pool"
-    backend_http_settings_name = "backend-http-settings"
-    priority                   = 2
-  }
-  redirect_configuration {
-    name                 = "ssl-redirect-config"
-    redirect_type        = "Permanent"
-    target_listener_name = "https-listener"
-    include_path         = true
-    include_query_string = true
-  }
   # The AppGW is later managed by the  Ingress Controller, but the Backend address
   # Pool is required to creat the resource. Therefore, "lifecycle:ignore_changes" is 
   # used to prevent TF from managing the gateway.
@@ -234,6 +195,7 @@ resource "azurerm_application_gateway" "this" {
       probe,
       request_routing_rule,
       frontend_port,
+      ssl_certificate,
       redirect_configuration,
     ]
   }
