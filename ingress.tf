@@ -1,4 +1,4 @@
-ilocals {
+locals {
   ingress_values = <<EOT
 langfuse:
   ingress:
